@@ -74,7 +74,7 @@ void populateDices(Dice * dices[numberOfDices]) {
 }
 
 void throwDices(mt19937 rng,uniform_int_distribution <mt19937::result_type> limits, Dice * dices[numberOfDices]) {
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < numberOfDices; i++) {
         if (dices[i]->getIsOnHold() == false) {
             dices[i]->setValue(limits(rng));
         }
@@ -82,24 +82,39 @@ void throwDices(mt19937 rng,uniform_int_distribution <mt19937::result_type> limi
 }
 
 void chooseDicesToHold (Dice * dices[numberOfDices]){
-    int diceNumber = 1;
-    while (diceNumber > 0 && diceNumber < 7 ) {
+    string input;
+
+    for (int i = 0; i < numberOfDices; i++) {
+        if (dices[i]->getIsOnHold() == false) {
+            cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << endl;
+        }
+    }
+    cout << endl;
+    cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
+    cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
+    cout << "Geben Sie ein s ein, um den Wurf zu speichern." << endl;
+    cout << endl << "Ihre Eingabe: ";
+    getline(cin,input);
+    cout << endl;
+
+    while( ( atoi(input.c_str()) < 1 || atoi(input.c_str()) > 6 ) && input != "r" && input != "s" ) {
+        cout << "Bitte treffen Sie eine gueltige Auswahl: ";
+        getline(cin,input);
+        cout << endl;
+    }
+
+
+/*
+    while (input < 1 || input > 6 ) {
         for (int i = 0; i < 6; i++) {
             if (dices[i]->getIsOnHold() == false) {
                 cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << endl;
-            }
-            else if (dices[i]->getIsOnHold() == true) {
+            } else if (dices[i]->getIsOnHold() == true) {
                 cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
             }
+        }
+        */
 
-        }
-        cout << "Geben Sie den Nummer des Wuerfels ein, den Sie halten moechten: ";
-        cin >> diceNumber;
-        cout << endl;
-        if (diceNumber > 0 && diceNumber < 7 ) {
-            dices[diceNumber-1]->setIsOnHold(true);
-        }
-    }
 }
 
 void chooseCategory (Category categories[numberOfCategories], Dice * dices[numberOfDices]) {
