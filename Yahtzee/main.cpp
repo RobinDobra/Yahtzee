@@ -36,11 +36,11 @@ Category * populateCategories(Category * categories[numberOfCategories]) {
     categories [3] = new Category("Vieren", "Summe aller geworfenen Vieren", 0);
     categories [4] = new Category("Fuenfen", "Summe aller geworfenen Fuenfen", 0);
     categories [5] = new Category("Sechsen", "Summe aller geworfenen Sechsen", 0);
-    categories [6] = new Category("Drei Gleiche", "Summe aller Wuerfel, wobei drei Gleiche enthalten sein müssen", 0);
-    categories [7] = new Category("Vier Gleiche", "Summe aller Wuerfel, wobei vier Gleiche enthalten sein müssen", 0);
-    categories [8] = new Category("Full House", "Summe aller Wuerfel, wobei zwei Gleiche und drei andere Gleiche enthalten sein müssen - 25 Punkte", 25);
-    categories [9] = new Category("Kleine Straße", "Vier aufeinanderfolgende Augenzahlen (z.B. 2-3-4-5) - 30 Punkte", 30);
-    categories [10] = new Category("Große Straße", "Fuenf aufeinanderfolgende Augenzahlen (z.B. 2-3-4-5-6) - 40 Punkte", 40);
+    categories [6] = new Category("Drei Gleiche", "Summe aller Wuerfel, wobei drei Gleiche enthalten sein muessen", 0);
+    categories [7] = new Category("Vier Gleiche", "Summe aller Wuerfel, wobei vier Gleiche enthalten sein muessen", 0);
+    categories [8] = new Category("Full House", "Summe aller Wuerfel, wobei zwei Gleiche und drei andere Gleiche enthalten sein muessen - 25 Punkte", 25);
+    categories [9] = new Category("Kleine Strasse", "Vier aufeinanderfolgende Augenzahlen (z.B. 2-3-4-5) - 30 Punkte", 30);
+    categories [10] = new Category("Grosse Strasse", "Fuenf aufeinanderfolgende Augenzahlen (z.B. 2-3-4-5-6) - 40 Punkte", 40);
     categories [11] = new Category("Chance", "Die Summe einer beliebigen Wuerfelkombination", 0);
     categories [12] = new Category("Yahtzee", "Alle fuenf Wuerfel zeigen dieselbe Zahl - 50 Punkte", 50);
     return categories[numberOfCategories];
@@ -77,50 +77,63 @@ void throwDices(mt19937 rng,uniform_int_distribution <mt19937::result_type> limi
     for (int i = 0; i < numberOfDices; i++) {
         if (dices[i]->getIsOnHold() == false) {
             dices[i]->setValue(limits(rng));
+        } else if (dices[i]->getIsOnHold() == true) {
+            cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
         }
     }
 }
 
 void chooseDicesToHold (Dice * dices[numberOfDices]){
     string input;
-
-    for (int i = 0; i < numberOfDices; i++) {
-        if (dices[i]->getIsOnHold() == false) {
-            cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << endl;
-        }
-    }
-    cout << endl;
-    cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
-    cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
-    cout << "Geben Sie ein s ein, um den Wurf zu speichern." << endl;
-    cout << endl << "Ihre Eingabe: ";
-    getline(cin,input);
-    cout << endl;
-
-    while( ( atoi(input.c_str()) < 1 || atoi(input.c_str()) > 6 ) && input != "r" && input != "s" ) {
-        cout << "Bitte treffen Sie eine gueltige Auswahl: ";
-        getline(cin,input);
-        cout << endl;
-    }
-
-
-/*
-    while (input < 1 || input > 6 ) {
-        for (int i = 0; i < 6; i++) {
+    bool isInLimits;
+    do {
+        for (int i = 0; i < numberOfDices; i++) {
             if (dices[i]->getIsOnHold() == false) {
                 cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << endl;
             } else if (dices[i]->getIsOnHold() == true) {
                 cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
             }
         }
-        */
+        cout << endl;
+        cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
+        cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
+        cout << "Geben Sie ein s ein, um den Wurf zu speichern." << endl;
+        cout << endl << "Ihre Eingabe: ";
+
+        getline(cin, input);
+        cout << endl;
+        isInLimits = atoi(input.c_str()) > 0 && atoi(input.c_str()) < 7;
+
+        while (!isInLimits && input != "r" && input != "s") {
+            cout << "Bitte treffen Sie eine gueltige Auswahl: ";
+            getline(cin, input);
+            cout << endl;
+            isInLimits = atoi(input.c_str()) > 0 && atoi(input.c_str()) < 7;
+        }
+        if (isInLimits) {
+            dices[atoi(input.c_str())-1]->setIsOnHold(true);
+        }
+
+    } while (isInLimits);
+
+/*
+ *         for (int i = 0; i < 6; i++) {
+            if (dices[i]->getIsOnHold() == false) {
+                cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << endl;
+            } else if (dices[i]->getIsOnHold() == true) {
+                cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
+            }
+        }
+ */
+
+
 
 }
 
-void chooseCategory (Category categories[numberOfCategories], Dice * dices[numberOfDices]) {
+void chooseCategory (Category * categories[numberOfCategories], Dice * dices[numberOfDices]) {
     cout << "In welcher Kategorie moechten Sie Ihren Wurf speichern?" << endl;
     for ( int i = 0; i < numberOfCategories; i++) {
-        cout << categories[i].getName() << endl;
+        cout << categories[i]->getName() << endl;
     }
 }
 
@@ -147,7 +160,7 @@ int main() {
 
     throwDices(rng, limits, dices);
     chooseDicesToHold(dices);
-    chooseCategory(*categories, dices);
+    chooseCategory(categories, dices);
 
 
     return 0;
