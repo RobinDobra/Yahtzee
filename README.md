@@ -1,0 +1,2 @@
+# Yahtzee
+Projekt C/C++
