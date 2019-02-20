@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <iterator>
+#include <iomanip>
 
 using namespace std;
 
@@ -73,71 +74,98 @@ void populateDices(Dice * dices[numberOfDices]) {
     dices[5] = new Dice("Wuerfel 6");
 }
 
-void throwDices(mt19937 rng,uniform_int_distribution <mt19937::result_type> limits, Dice * dices[numberOfDices]) {
+void throwDices(Dice * dices[numberOfDices]) {
+    mt19937 rng; //Mersenne-Twister Pseudo-Zufallszahlengenerator
+    rng.seed(random_device()()); // initialisiere Seed
+    uniform_int_distribution <mt19937::result_type> limits(1,6); // Zahlen in den Grenzen von 1 bis 6
     for (int i = 0; i < numberOfDices; i++) {
         if (dices[i]->getIsOnHold() == false) {
             dices[i]->setValue(limits(rng));
         } else if (dices[i]->getIsOnHold() == true) {
-            cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
+            //cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
         }
     }
 }
 
-void chooseDicesToHold (Dice * dices[numberOfDices]){
-    string input;
+string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
+    string userInput;
     bool isInLimits;
+
     do {
+        cout << "----------------------------------------------" << endl;
+        cout << "### Dies ist Wurf " << anzahlWuerfe << " von 3 ###" << endl << endl;
         for (int i = 0; i < numberOfDices; i++) {
+
             if (dices[i]->getIsOnHold() == false) {
                 cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << endl;
             } else if (dices[i]->getIsOnHold() == true) {
                 cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
             }
         }
+
+
         cout << endl;
-        cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
-        cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
-        cout << "Geben Sie ein s ein, um den Wurf zu speichern." << endl;
+        if (anzahlWuerfe < 3) {
+            cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
+            cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
+        }
+        cout << "Geben Sie ein r oder s ein, um den Wurf zu speichern." << endl;
         cout << endl << "Ihre Eingabe: ";
 
-        getline(cin, input);
+        getline(cin, userInput);
         cout << endl;
-        isInLimits = atoi(input.c_str()) > 0 && atoi(input.c_str()) < 7;
+        isInLimits = atoi(userInput.c_str()) > 0 && atoi(userInput.c_str()) < 7;
 
-        while (!isInLimits && input != "r" && input != "s") {
+        while (!isInLimits && userInput != "r" && userInput != "s") {
             cout << "Bitte treffen Sie eine gueltige Auswahl: ";
-            getline(cin, input);
+            getline(cin, userInput);
             cout << endl;
-            isInLimits = atoi(input.c_str()) > 0 && atoi(input.c_str()) < 7;
+            isInLimits = atoi(userInput.c_str()) > 0 && atoi(userInput.c_str()) < 7;
         }
-        if (isInLimits) {
-            dices[atoi(input.c_str())-1]->setIsOnHold(true);
+
+        if (isInLimits && anzahlWuerfe < 3) {
+            if (dices[atoi(userInput.c_str()) - 1]->getIsOnHold() == false) {
+                dices[atoi(userInput.c_str()) - 1]->setIsOnHold(true);
+            } else {
+                dices[atoi(userInput.c_str()) - 1]->setIsOnHold(false);
+            }
+
         }
+
 
     } while (isInLimits);
 
-/*
- *         for (int i = 0; i < 6; i++) {
-            if (dices[i]->getIsOnHold() == false) {
-                cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << endl;
-            } else if (dices[i]->getIsOnHold() == true) {
-                cout << "Wert fuer " << dices[i]->getName() << ": " << dices[i]->getValue() << " # wird gehalten" << endl;
-            }
-        }
- */
-
-
-
+    return userInput;
 }
 
-void chooseCategory (Category * categories[numberOfCategories], Dice * dices[numberOfDices]) {
-    cout << "In welcher Kategorie moechten Sie Ihren Wurf speichern?" << endl;
+void saveRound (Category * categories[numberOfCategories], Dice * dices[numberOfDices]) {
+    int userInput;
+    cout << endl;
+
+    cout << "-------------------------------------------------------------------------------" << endl;
+    cout << "### Geben Sie den Nummer der Kategorie an, in der Sie ihren Wurf speichern wollen: ###" << endl;
     for ( int i = 0; i < numberOfCategories; i++) {
-        cout << categories[i]->getName() << endl;
+        string resizedName = categories[i]->getName();
+        string resizedCounter = to_string(i+1)+": ";
+        resizedName.resize(13);
+        resizedCounter.resize(4);
+        cout << resizedCounter <<  resizedName << " | " << categories[i]->getDescription();
+        if (categories[i]->getHasBeenRolled()) {
+            cout << " | isSet";
+        }
+        cout << endl;
     }
+    cin >> userInput;
+    categories[userInput]->setHasBeenRolled(true);
+
+    //categories[i]->setPoints(111);
 }
 
 int main() {
+    // Konstanten
+    string userInput = "unset";
+    int anzahlWuerfe = 0;
+
     // Kategorien
     Category * categories[numberOfCategories];
     categories[numberOfCategories] = populateCategories(categories);
@@ -145,22 +173,21 @@ int main() {
     // Score
     Score *score = new Score(); // initialisiert den Punktestand (upper, lower, total)
 
-    // Zufallszahlen
-    mt19937 rng; //Mersenne-Twister Pseudo-Zufallszahlengenerator
-    rng.seed(random_device()()); // initialisiere Seed
-    uniform_int_distribution <mt19937::result_type> limits(1,6); // Zahlen in den Grenzen von 1 bis 6
-
     // Wuerfel
     Dice * dices[numberOfDices];
     populateDices(dices);
 
-
     // Spiel
     startScreen();
+    while (userInput != "s" && anzahlWuerfe < 3) {
+        anzahlWuerfe++;
+        throwDices(dices);
+        userInput = chooseDicesToHold(dices, anzahlWuerfe);
+    }
 
-    throwDices(rng, limits, dices);
-    chooseDicesToHold(dices);
-    chooseCategory(categories, dices);
+    cout << "userinput = s" << endl;
+
+    saveRound(categories, dices);
 
 
     return 0;

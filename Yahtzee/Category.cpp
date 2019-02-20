@@ -35,7 +35,7 @@ void Category::setPoints(const int &points) {
     Category::points = points;
 }
 
-bool Category::isHasBeenRolled() const {
+bool Category::getHasBeenRolled() const {
     return hasBeenRolled;
 }
 

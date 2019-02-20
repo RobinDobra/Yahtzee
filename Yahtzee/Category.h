@@ -28,7 +28,7 @@ public:
 
         void setPoints(const int &points);
 
-        bool isHasBeenRolled() const;
+        bool getHasBeenRolled() const;
 
         void setHasBeenRolled(bool hasBeenRolled);
 

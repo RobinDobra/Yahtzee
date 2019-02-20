@@ -9,7 +9,6 @@ add_executable(Yahtzee
         .idea/encodings.xml
         .idea/modules.xml
         .idea/vcs.xml
-        .idea/workspace.xml
         .idea/Yahtzee.iml
         Yahtzee/cmake-build-debug/cmake_install.cmake
         Yahtzee/cmake-build-debug/CMakeCache.txt
