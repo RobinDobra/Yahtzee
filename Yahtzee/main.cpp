@@ -7,11 +7,13 @@
 #include <map>
 #include <iterator>
 #include <iomanip>
+#include <list>
+#include <set>
 
 using namespace std;
 
 static const int numberOfCategories = 13;
-static const int numberOfDices = 6;
+static const int numberOfDices = 5;
 
 void printCategory(Category * categories, Score *score, int numberOfCategories) {
     score->setUpperScore(5);
@@ -71,7 +73,6 @@ void populateDices(Dice * dices[numberOfDices]) {
     dices[2] = new Dice("Wuerfel 3");
     dices[3] = new Dice("Wuerfel 4");
     dices[4] = new Dice("Wuerfel 5");
-    dices[5] = new Dice("Wuerfel 6");
 }
 
 void throwDices(Dice * dices[numberOfDices]) {
@@ -109,7 +110,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
             cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
             cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
         }
-        cout << "Geben Sie ein r oder s ein, um den Wurf zu speichern." << endl;
+        cout << "Geben Sie ein s ein, um den Wurf zu speichern." << endl;
         cout << endl << "Ihre Eingabe: ";
 
         getline(cin, userInput);
@@ -131,39 +132,196 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
             }
 
         }
-
-
     } while (isInLimits);
 
     return userInput;
 }
 
-void saveRound (Category * categories[numberOfCategories], Dice * dices[numberOfDices]) {
-    int userInput;
+int saveToCategory (Category * categories[numberOfCategories], Dice * dices[numberOfDices]) {
+    string userInput;
+    bool isInLimits = false;
+
     cout << endl;
 
     cout << "-------------------------------------------------------------------------------" << endl;
-    cout << "### Geben Sie den Nummer der Kategorie an, in der Sie ihren Wurf speichern wollen: ###" << endl;
-    for ( int i = 0; i < numberOfCategories; i++) {
+
+    for (int i = 0; i < numberOfCategories; i++) {
         string resizedName = categories[i]->getName();
-        string resizedCounter = to_string(i+1)+": ";
-        resizedName.resize(13);
+        string resizedCounter = to_string(i + 1) + ": ";
+        resizedName.resize(14);
         resizedCounter.resize(4);
-        cout << resizedCounter <<  resizedName << " | " << categories[i]->getDescription();
+        cout << resizedCounter << resizedName << " | " << categories[i]->getDescription();
         if (categories[i]->getHasBeenRolled()) {
             cout << " | isSet";
         }
         cout << endl;
     }
-    cin >> userInput;
-    categories[userInput]->setHasBeenRolled(true);
 
-    //categories[i]->setPoints(111);
+    while (!isInLimits) {
+        cout << "### Geben Sie die Nummer der Kategorie an, in der Sie ihren Wurf speichern wollen: ###" << endl;
+        cin >> userInput;
+        isInLimits = atoi(userInput.c_str()) > 0 && atoi(userInput.c_str()) < numberOfCategories;
+    }
+    int categoryNumber = atoi(userInput.c_str());
+
+    //categories[inputNumber]->setHasBeenRolled(true); //TODO wann setzen?
+
+    return categoryNumber;
+
 }
+
+void calculatePointsForCategory(Category * categories[numberOfCategories], Dice * dices[numberOfDices], int categoryNumber) {
+    int countPoints = 0;
+    // ### calculateRound
+    if (categoryNumber >= 1 && categoryNumber <=6 ) {   // Einses, Zweien ... Sechsen
+        for (int i = 0; i < numberOfDices; i++) {
+            if (categoryNumber == dices[i]->getValue()) {
+                countPoints++;
+            }
+        }
+        countPoints = countPoints * categoryNumber;
+        categories[categoryNumber - 1]->setPoints(countPoints);
+        categories[categoryNumber - 1]->setHasBeenRolled(true);
+    }
+    else if (categoryNumber == 7) {   // Drei Gleiche
+        int occurences1 = dices[0]->getValue(); int counter1 = 0;
+        int occurences2 = dices[1]->getValue(); int counter2 = 0;
+        int occurences3 = dices[2]->getValue(); int counter3 = 0;
+        int occurences4 = dices[3]->getValue(); int counter4 = 0;
+        int totalValue = 0;
+        for (int i = 0; i < numberOfDices; i++) {
+            if (occurences1 == dices[i]->getValue()) {
+                counter1++;
+            } else if (occurences2 == dices[i]->getValue()){
+                counter2++;
+            } else if (occurences3 == dices[i]->getValue()){
+                counter3++;
+            } else if (occurences4 == dices[i]->getValue()){
+                counter4++;
+            }
+
+            totalValue += dices[i]->getValue();
+        }
+        if (counter1 >= 3 || counter2 >= 3|| counter3 >= 3 || counter4 >= 3) {
+            categories[categoryNumber - 1]->setPoints(totalValue);
+            categories[categoryNumber - 1]->setHasBeenRolled(true);
+        }
+        else {
+            cout << "### Leider keine drei Gleichen. ###" << endl;
+        }
+
+        cout << "Punkte insgesamt: " << categories[categoryNumber - 1]->getPoints() << endl;
+    }
+    else if (categoryNumber == 8) {  // Vier Gleiche
+        int occurences1 = dices[0]->getValue(); int counter1 = 0;
+        int occurences2 = dices[1]->getValue(); int counter2 = 0;
+        int occurences3 = dices[2]->getValue(); int counter3 = 0;
+        int totalValue = 0;
+        for (int i = 0; i < numberOfDices; i++) {
+            if (occurences1 == dices[i]->getValue()) {
+                counter1++;
+            } else if (occurences2 == dices[i]->getValue()) {
+                counter2++;
+            } else if (occurences3 == dices[i]->getValue()) {
+                counter3++;
+
+                totalValue += dices[i]->getValue();
+            }
+            if (counter1 >= 3 || counter2 >= 3 || counter3 >= 3) {
+                categories[categoryNumber - 1]->setPoints(totalValue);
+                categories[categoryNumber - 1]->setHasBeenRolled(true);
+            }
+            else {
+                cout << "### Leider keine vier Gleichen. ###" << endl;
+            }
+            cout << "Punkte insgesamt: " << categories[categoryNumber - 1]->getPoints() << endl;
+        }
+    }
+    else if (categoryNumber == 9) {  // Full House
+        int occurences1 = dices[0]->getValue(); int counter1 = 0;
+        int occurences2 = dices[1]->getValue(); int counter2 = 0;
+        for (int i = 0; i < numberOfDices; i++) {
+            if (occurences1 == dices[i]->getValue()) {
+                counter1++;
+            } else if (occurences2 == dices[i]->getValue()) {
+                counter2++;
+            }
+        }
+        if ((counter1 == 3 && counter2 == 2) || counter1 == 2 && counter2 == 3) {
+            cout << "### Full House! ###" << endl;
+            categories[categoryNumber - 1]->setHasBeenRolled(true);
+        }
+        else {
+            cout << "### Leider kein Full House. ###" << endl;
+        }
+
+
+    }
+
+    else if (categoryNumber == 10) { // Kleine Straße
+        int occurences[] = {0, 0, 0, 0, 0, 0};
+
+        for (int i = 0; i < 6; i++) {
+            occurences[dices[i]->getValue()]++; // Zaehlt die Vorkommen aller Zahlen und zählt hoch
+        }
+        if (    (occurences[0] >= 1 && occurences[1] >= 1 && occurences[2] >= 1 && occurences[3] >= 1) ||  // 1, 2, 3, 4
+                (occurences[1] >= 1 && occurences[2] >= 1 && occurences[3] >= 1 && occurences[4] >= 1) ||  // 2, 3, 4, 5
+                (occurences[2] >= 1 && occurences[3] >= 1 && occurences[4] >= 1 && occurences[5] >= 1)  )  // 3, 4, 5, 6
+        {
+            cout << "### Kleine Strasse! ###" << endl;
+            categories[categoryNumber - 1]->setHasBeenRolled(true);
+        }
+        else {
+            cout << "### Leider keine kleine Strasse. ###" << endl;
+        }
+    }
+    else if (categoryNumber == 11) {
+        int occurences[] = {0, 0, 0, 0, 0, 0};
+
+        for (int i = 0; i < 6; i++) {
+            occurences[dices[i]->getValue()]++; // Zaehlt die Vorkommen aller Zahlen und zählt hoch
+        }
+        if (    (occurences[0] >= 1 && occurences[1] >= 1 && occurences[2] >= 1 && occurences[3] >= 1 && occurences[4] >= 1) ||  // 1, 2, 3, 4, 5
+                (occurences[1] >= 1 && occurences[2] >= 1 && occurences[3] >= 1 && occurences[4] >= 1 && occurences[5] >= 1)       )  // 2, 3, 4, 5, 6
+        {
+            cout << "### Kleine Strasse! ###" << endl;
+            categories[categoryNumber - 1]->setHasBeenRolled(true);
+        }
+        else {
+            cout << "### Leider keine grosse Strasse. ###" << endl;
+        }
+    }
+
+    else if (categoryNumber == 12) {
+        int sum = 0;
+        for (int i = 0; i < 6; i++) {
+            sum += dices[i]->getValue();
+        }
+        categories[categoryNumber - 1]->setHasBeenRolled(true);
+        cout << "Ihre Chance hat " << sum << "Punkte eingebracht!";
+    }
+
+    else if(categoryNumber == 13) {
+        int occurences[] = {0, 0, 0, 0, 0, 0};
+
+        for (int i = 0; i < 6; i++) {
+            occurences[dices[i]->getValue()]++; // Zaehlt die Vorkommen aller Zahlen und zählt hoch
+        }
+        for (int i = 0; i < 6; i++) {
+            if (occurences[i] >= 5) {
+                cout << "### Herzlichen Glückwunsch zum Yahtzee! ### ";
+                categories[categoryNumber - 1]->setHasBeenRolled(true);
+            }
+        }
+    }
+}
+
+
 
 int main() {
     // Konstanten
     string userInput = "unset";
+    int chosenCategory;
     int anzahlWuerfe = 0;
 
     // Kategorien
@@ -179,15 +337,21 @@ int main() {
 
     // Spiel
     startScreen();
-    while (userInput != "s" && anzahlWuerfe < 3) {
-        anzahlWuerfe++;
-        throwDices(dices);
-        userInput = chooseDicesToHold(dices, anzahlWuerfe);
+    for (int rundeNummer = 1; rundeNummer <= 13; rundeNummer++) {
+        while (userInput != "s" && anzahlWuerfe < 3) {
+            anzahlWuerfe++;
+            throwDices(dices);
+            userInput = chooseDicesToHold(dices, anzahlWuerfe);
+        }
+
+        cout << "userinput = s" << endl;
+
+        chosenCategory = saveToCategory(categories, dices);
+        calculatePointsForCategory(categories, dices, chosenCategory);
+
+        string userInput = "unset";
     }
 
-    cout << "userinput = s" << endl;
-
-    saveRound(categories, dices);
 
 
     return 0;
