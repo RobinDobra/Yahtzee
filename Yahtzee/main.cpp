@@ -76,6 +76,7 @@ void populateDices(Dice * dices[numberOfDices]) {
 }
 
 void throwDices(Dice * dices[numberOfDices]) {
+    cout << "throwDices " << endl;
     mt19937 rng; //Mersenne-Twister Pseudo-Zufallszahlengenerator
     rng.seed(random_device()()); // initialisiere Seed
     uniform_int_distribution <mt19937::result_type> limits(1,6); // Zahlen in den Grenzen von 1 bis 6
@@ -89,6 +90,7 @@ void throwDices(Dice * dices[numberOfDices]) {
 }
 
 string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
+    cout << "chooseDicesToHold " << endl;
     string userInput;
     bool isInLimits;
 
@@ -138,6 +140,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
 }
 
 int saveToCategory (Category * categories[numberOfCategories], Dice * dices[numberOfDices]) {
+    cout << "saveToCategory " << endl;
     string userInput;
     bool isInLimits = false;
 
@@ -171,6 +174,7 @@ int saveToCategory (Category * categories[numberOfCategories], Dice * dices[numb
 }
 
 void calculatePointsForCategory(Category * categories[numberOfCategories], Dice * dices[numberOfDices], int categoryNumber) {
+    cout << "calculatePointsForCategory " << endl;
     int countPoints = 0;
     // ### calculateRound
     if (categoryNumber >= 1 && categoryNumber <=6 ) {   // Einses, Zweien ... Sechsen
@@ -337,7 +341,7 @@ int main() {
 
     // Spiel
     startScreen();
-    for (int rundeNummer = 1; rundeNummer <= 13; rundeNummer++) {
+    for (int rundenNummer = 1; rundenNummer <= 13; rundenNummer++) {
         while (userInput != "s" && anzahlWuerfe < 3) {
             anzahlWuerfe++;
             throwDices(dices);
@@ -349,7 +353,8 @@ int main() {
         chosenCategory = saveToCategory(categories, dices);
         calculatePointsForCategory(categories, dices, chosenCategory);
 
-        string userInput = "unset";
+        userInput = "unset";
+        anzahlWuerfe = 0;
     }
 
 
