@@ -4,10 +4,10 @@
 
 #include "Category.h"
 
-Category::Category(const string &name, const string &description, int points) {
+Category::Category(const string &name, const string &description) {
     Category::name = name;
     Category::description = description;
-    Category::points = points;
+    Category::points = 0;
     Category::hasBeenRolled = false;
 }
 

@@ -14,7 +14,7 @@ class Category {
         bool hasBeenRolled;
 
 public:
-        Category(const string &name, const string &description, int points);
+        Category(const string &name, const string &description);
 
         const string &getName() const;
 
