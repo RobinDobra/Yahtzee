@@ -3,12 +3,6 @@
 #include "Dice.h"
 #include <iostream>
 #include <random>
-#include <string>
-#include <map>
-#include <iterator>
-#include <iomanip>
-#include <list>
-#include <set>
 
 using namespace std;
 
@@ -95,7 +89,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
     bool isInLimits;
 
     do {
-        cout << "----------------------------------------------" << endl;
+        // cout << "----------------------------------------------" << endl;
         cout << "### Dies ist Wurf " << anzahlWuerfe << " von 3 ###" << endl << endl;
         for (int i = 0; i < numberOfDices; i++) {
             if (dices[i]->getIsOnHold() == false) {
@@ -141,7 +135,7 @@ int saveToCategory (Category * categories[numberOfCategories], Dice * dices[numb
     string userInput;
     bool isInLimits = false;
 
-    cout << "-------------------------------------------------------------------------------" << endl;
+    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||" << endl;
 
     for (int i = 0; i < numberOfCategories; i++) {
         string resizedName = categories[i]->getName();
@@ -307,29 +301,75 @@ void calculatePointsForCategory(Category * categories[numberOfCategories], Dice 
     }
 
     else if(categoryNumber == 13) {
-        int occurences[] = {0, 0, 0, 0, 0, 0};
+        int v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0;
         for (int i = 0; i < numberOfDices; i++) {
-            occurences[(dices[i]->getValue()) - 1] =  occurences[(dices[i]->getValue())] + 1 ; // Zaehlt die Vorkommen aller Zahlen und zählt hoch
+            int tempValue = dices[i]->getValue();
+            if (tempValue == 1) {
+                v1++;
+            } else if (tempValue == 2) {
+                v2++;
+            } else if (tempValue == 3) {
+                v3++;
+            } else if (tempValue == 4) {
+                v4++;
+            } else if (tempValue == 5) {
+                v5++;
+            } else if (tempValue == 6) {
+                v6++;
+            }
+           //v1 =  occurences[(dices[i]->getValue())] + 1 ; // Zaehlt die Vorkommen aller Zahlen und zählt hoch
          /*   occurences[dices[5-1]] = occurences[5-1];
             occurences[dices]*/
         }
-        for (int i = 0; i < 6; i++) {
-            cout << "Haeufigkeiten von "<< i+1 << ": " << occurences[i] << endl;
-            if (occurences[i] == 5) {
-                cout << "### Herzlichen Glückwunsch zum Yahtzee! ### ";
-                categories[categoryNumber - 1]->setPoints(50);
-
-            }
+        if (v1 == 5 || v2 == 5 || v3 == 5 || v4 == 5 || v5 ==5 || v6 == 5) {
+            cout << "### Yahtzee! ###" << endl;
+            categories[categoryNumber - 1]->setPoints(40);
+        }
+        else {
+            cout << "### Leider kein Yahtzee ###" << endl;
         }
     }
     categories[categoryNumber - 1]->setHasBeenRolled(true);
 }
 
-void endScreen() {
+void calculateScore(Category * categories[numberOfCategories], Score * score) {
+    int updatedScore;
+    for (int i = 0; i < 6; i++) {
+        updatedScore = score->getUpperScore() + categories[i]->getPoints();
+        score->setUpperScore(updatedScore);
+    }
+    for (int i = 6; i < numberOfCategories; i++) {
+        updatedScore = score->getLowerScore() + categories[i]->getPoints();
+        score->setLowerScore(updatedScore);
+    }
+}
 
+
+void endScreen(Category * categories[numberOfCategories], Score * score) {
+    for (int i = 0; i < numberOfCategories; i++) {
+        string resizedCounter = to_string(i + 1) + ": ";
+        string resizedName = categories[i]->getName();
+        string resizedPoint = to_string(categories[i]->getPoints());
+        resizedCounter.resize(4);
+        resizedName.resize(22);
+        resizedPoint.resize(10);
+        cout << resizedCounter << resizedName << " | " << resizedPoint << " | " << categories[i]->getDescription() << endl;
+
+        if (i == 5) {
+            cout << "__________________________________________________________________________________" << endl;
+            cout << "Punktestand oberes Segment: " << score->getUpperScore() << endl << endl;
+
+        } else if (i == 12) {
+            cout << "__________________________________________________________________________________" << endl;
+            cout << "Punktestand unteres Segment: " << score->getLowerScore() << endl << endl << endl;
+
+        }
+    }
+    cout << "Ihre Gesamtpunktzahl betraegt: " << score->getTotalScore() << " Punkte." << endl;
 }
 
 int main() {
+
     // Konstanten
     string userInput = "unset";
     int chosenCategory;
@@ -348,15 +388,17 @@ int main() {
 
     // Spiel
     startScreen();
+    calculateScore(categories, score);
+    endScreen(categories, score);
+
     for (int rundenNummer = 1; rundenNummer <= 13; rundenNummer++) {
-        cout << endl << "~~~~~~~~~~~~~~~~ Das ist Runde Nummer " << rundenNummer << "! ~~~~~~~~~~~~~~~~" << endl;
+        cout << endl << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Das ist Runde Nummer " << rundenNummer << "! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
         while (userInput != "s" && anzahlWuerfe < 20) {
 
             anzahlWuerfe++;
             throwDices(dices);
             userInput = chooseDicesToHold(dices, anzahlWuerfe);
         }
-
 
         chosenCategory = saveToCategory(categories, dices);
         calculatePointsForCategory(categories, dices, chosenCategory);
@@ -366,11 +408,9 @@ int main() {
         for (int i = 0; i < numberOfDices; i++) {
             dices[i]->setIsOnHold(false); // Nach jeder Runde die festgehaltenen Wuerfel zuruecksetzen
         }
+
     }
-    endScreen();
-
-
-
-
+    calculateScore(categories, score);
+    endScreen(categories, score);
     return 0;
 }

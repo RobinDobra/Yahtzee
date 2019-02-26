@@ -11,17 +11,16 @@ class Score
 
     public:
         Score();
-        void Output();
 
-    int getLowerScore() const;
+        int getLowerScore() const;
 
-    void setLowerScore(int lowerScore);
+        void setLowerScore(int lowerScore);
 
-    int getUpperScore() const;
+        int getUpperScore() const;
 
-    void setUpperScore(int upperScore);
+        void setUpperScore(int upperScore);
 
-    int getTotalScore() const;
+        int getTotalScore() const;
 
-    void setTotalScore(int totalScore);
+        void setTotalScore(int totalScore);
 };

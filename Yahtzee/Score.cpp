@@ -14,6 +14,7 @@ Score::Score()
     this->totalScore = upperScore + lowerScore;
 }
 
+/*
 void Score::Output() {
     cout
     << "Punktestand oberer Abschnitt: " << this->upperScore
@@ -21,7 +22,7 @@ void Score::Output() {
     << "Punktestand insgesamt: " << this->totalScore
     << endl;
 }
-
+*/
 int Score::getLowerScore() const {
     return lowerScore;
 }
