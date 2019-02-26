@@ -107,7 +107,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
 
 
         cout << endl;
-        if (anzahlWuerfe < 3) {
+        if (anzahlWuerfe < 20) {
             cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
             cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
         }
@@ -124,7 +124,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
             isInLimits = atoi(userInput.c_str()) > 0 && atoi(userInput.c_str()) < 7;
         }
 
-        if (isInLimits && anzahlWuerfe < 3) {
+        if (isInLimits && anzahlWuerfe < 20) {
             if (dices[atoi(userInput.c_str()) - 1]->getIsOnHold() == false) {
                 dices[atoi(userInput.c_str()) - 1]->setIsOnHold(true);
             } else {
@@ -309,10 +309,12 @@ void calculatePointsForCategory(Category * categories[numberOfCategories], Dice 
     else if(categoryNumber == 13) {
         int occurences[] = {0, 0, 0, 0, 0, 0};
         for (int i = 0; i < numberOfDices; i++) {
-            occurences[dices[i]->getValue() - 1] =  occurences[dices[i]->getValue()] + 1 ; // Zaehlt die Vorkommen aller Zahlen und zählt hoch
-
+            occurences[(dices[i]->getValue()) - 1] =  occurences[(dices[i]->getValue())] + 1 ; // Zaehlt die Vorkommen aller Zahlen und zählt hoch
+         /*   occurences[dices[5-1]] = occurences[5-1];
+            occurences[dices]*/
         }
-        for (int i = 0; i < numberOfDices; i++) {
+        for (int i = 0; i < 6; i++) {
+            cout << "Haeufigkeiten von "<< i+1 << ": " << occurences[i] << endl;
             if (occurences[i] == 5) {
                 cout << "### Herzlichen Glückwunsch zum Yahtzee! ### ";
                 categories[categoryNumber - 1]->setPoints(50);
@@ -348,7 +350,7 @@ int main() {
     startScreen();
     for (int rundenNummer = 1; rundenNummer <= 13; rundenNummer++) {
         cout << endl << "~~~~~~~~~~~~~~~~ Das ist Runde Nummer " << rundenNummer << "! ~~~~~~~~~~~~~~~~" << endl;
-        while (userInput != "s" && anzahlWuerfe < 3) {
+        while (userInput != "s" && anzahlWuerfe < 20) {
 
             anzahlWuerfe++;
             throwDices(dices);
