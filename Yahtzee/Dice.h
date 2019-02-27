@@ -28,5 +28,6 @@ class Dice {
 
         void setIsOnHold(bool isOnHold);
 
+        ~Dice();
 
 };

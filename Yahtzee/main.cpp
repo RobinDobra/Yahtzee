@@ -114,7 +114,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
         while (!isInLimits && userInput != "r" && userInput != "s") {
             cout << "Bitte treffen Sie eine gueltige Auswahl: ";
             getline(cin, userInput);
-            cout << endl;
+
             isInLimits = atoi(userInput.c_str()) > 0 && atoi(userInput.c_str()) < 7;
         }
 
@@ -135,7 +135,7 @@ int saveToCategory (Category * categories[numberOfCategories], Dice * dices[numb
     string userInput;
     bool isInLimits = false;
 
-    cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||" << endl;
+    cout << "------------------------------------------------------------------------------------------" << endl;
 
     for (int i = 0; i < numberOfCategories; i++) {
         string resizedName = categories[i]->getName();
@@ -170,6 +170,7 @@ void calculatePointsForCategory(Category * categories[numberOfCategories], Dice 
         }
         countPoints = countPoints * categoryNumber;
         categories[categoryNumber - 1]->setPoints(countPoints);
+        cout << "Sie haben " << countPoints << " Punkte in der Kategorie \"" << categories[categoryNumber - 1]->getName() << "\" erzielt." << endl;
     }
     else if (categoryNumber == 7) {   // Drei Gleiche
         int occurences1 = dices[0]->getValue(); int counter1 = 0;
@@ -344,7 +345,6 @@ void calculateScore(Category * categories[numberOfCategories], Score * score) {
     }
 }
 
-
 void endScreen(Category * categories[numberOfCategories], Score * score) {
     for (int i = 0; i < numberOfCategories; i++) {
         string resizedCounter = to_string(i + 1) + ": ";
@@ -388,11 +388,9 @@ int main() {
 
     // Spiel
     startScreen();
-    calculateScore(categories, score);
-    endScreen(categories, score);
 
-    for (int rundenNummer = 1; rundenNummer <= 13; rundenNummer++) {
-        cout << endl << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Das ist Runde Nummer " << rundenNummer << "! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+    for (int rundenNummer = 1; rundenNummer <= 1; rundenNummer++) {
+        cout << endl << "============================================== Das ist Runde Nummer " << rundenNummer << "! ==============================================" << endl;
         while (userInput != "s" && anzahlWuerfe < 20) {
 
             anzahlWuerfe++;
@@ -408,9 +406,14 @@ int main() {
         for (int i = 0; i < numberOfDices; i++) {
             dices[i]->setIsOnHold(false); // Nach jeder Runde die festgehaltenen Wuerfel zuruecksetzen
         }
-
     }
+
     calculateScore(categories, score);
     endScreen(categories, score);
+
+   delete [] categories[numberOfCategories];
+   delete [] dices[numberOfDices];
+   delete score;
+
     return 0;
 }

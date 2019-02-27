@@ -3,11 +3,12 @@
 //
 
 #include "Dice.h"
+#include <iostream>
 
 Dice::Dice(const string &name) {
-    Dice::name = name;
-    Dice::value = -1;
-    Dice::isOnHold = false;
+    this->name = name;
+    this->value = -1;
+    this->isOnHold = false;
 }
 
 const string &Dice::getName() const {
@@ -15,7 +16,7 @@ const string &Dice::getName() const {
 }
 
 void Dice::setName(const string &name) {
-    Dice::name = name;
+    this->name = name;
 }
 
 int Dice::getValue() const {
@@ -23,7 +24,7 @@ int Dice::getValue() const {
 }
 
 void Dice::setValue(int value) {
-    Dice::value = value;
+    this->value = value;
 }
 
 bool Dice::getIsOnHold() const {
@@ -31,5 +32,12 @@ bool Dice::getIsOnHold() const {
 }
 
 void Dice::setIsOnHold(bool isOnHold) {
-    Dice::isOnHold = isOnHold;
+    this->isOnHold = isOnHold;
+}
+
+Dice::~Dice() {
+    cout << "Dice is being deleted" << endl;
+    this->name.clear();
+    this->value = -1;
+    this->isOnHold = false;
 }

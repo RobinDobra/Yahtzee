@@ -3,12 +3,13 @@
 //
 
 #include "Category.h"
+#include <iostream>
 
 Category::Category(const string &name, const string &description) {
-    Category::name = name;
-    Category::description = description;
-    Category::points = 0;
-    Category::hasBeenRolled = false;
+    this->name = name;
+    this->description = description;
+    this->points = 0;
+    this->hasBeenRolled = false;
 }
 
 const string &Category::getName() const {
@@ -16,7 +17,7 @@ const string &Category::getName() const {
 }
 
 void Category::setName(const string &name) {
-    Category::name = name;
+    this->name = name;
 }
 
 const string &Category::getDescription() const {
@@ -24,7 +25,7 @@ const string &Category::getDescription() const {
 }
 
 void Category::setDescription(const string &description) {
-    Category::description = description;
+    this->description = description;
 }
 
 const int &Category::getPoints() const {
@@ -32,7 +33,7 @@ const int &Category::getPoints() const {
 }
 
 void Category::setPoints(const int &points) {
-    Category::points = points;
+    this->points = points;
 }
 
 bool Category::getHasBeenRolled() const {
@@ -40,9 +41,17 @@ bool Category::getHasBeenRolled() const {
 }
 
 void Category::setHasBeenRolled(bool hasBeenRolled) {
-    Category::hasBeenRolled = hasBeenRolled;
+    this->hasBeenRolled = hasBeenRolled;
 }
-
+/*
+Category::~Category() {
+    cout << "Category is being deleted" << endl;
+    this->name.clear();
+    this->description.clear();
+    this->points = 0;
+    this->hasBeenRolled = false;
+}
+*/
 
 
 

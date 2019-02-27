@@ -14,22 +14,13 @@ Score::Score()
     this->totalScore = upperScore + lowerScore;
 }
 
-/*
-void Score::Output() {
-    cout
-    << "Punktestand oberer Abschnitt: " << this->upperScore
-    << "Punktestand unterer Abschnitt: " << this->lowerScore
-    << "Punktestand insgesamt: " << this->totalScore
-    << endl;
-}
-*/
 int Score::getLowerScore() const {
     return lowerScore;
 }
 
 void Score::setLowerScore(int lowerScore) {
-    Score::lowerScore = lowerScore;
-    setTotalScore(lowerScore + Score::getUpperScore());
+    this->lowerScore = lowerScore;
+    setTotalScore(lowerScore + this->getUpperScore());
 }
 
 int Score::getUpperScore() const {
@@ -37,8 +28,8 @@ int Score::getUpperScore() const {
 }
 
 void Score::setUpperScore(int upperScore) {
-    Score::upperScore = upperScore;
-    setTotalScore(upperScore + Score::getLowerScore());
+    this->upperScore = upperScore;
+    setTotalScore(upperScore + this->getLowerScore());
 }
 
 int Score::getTotalScore() const {
@@ -46,5 +37,12 @@ int Score::getTotalScore() const {
 }
 
 void Score::setTotalScore(int totalScore) {
-    Score::totalScore = totalScore;
+    this->totalScore = totalScore;
 }
+
+Score::~Score() {
+    cout << "Score is being deleted" << endl;
+    this->upperScore = 0;
+    this->lowerScore = 0;
+    this->totalScore = 0;
+};

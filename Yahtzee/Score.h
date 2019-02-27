@@ -23,4 +23,6 @@ class Score
         int getTotalScore() const;
 
         void setTotalScore(int totalScore);
+
+        ~Score();
 };
