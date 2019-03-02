@@ -43,15 +43,15 @@ bool Category::getHasBeenRolled() const {
 void Category::setHasBeenRolled(bool hasBeenRolled) {
     this->hasBeenRolled = hasBeenRolled;
 }
-/*
+
+
 Category::~Category() {
     cout << "Category is being deleted" << endl;
-    this->name.clear();
-    this->description.clear();
+    this->name="";
+    this->description="";
     this->points = 0;
     this->hasBeenRolled = false;
 }
-*/
 
 
 

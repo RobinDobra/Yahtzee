@@ -32,7 +32,7 @@ public:
 
         void setHasBeenRolled(bool hasBeenRolled);
 
-        //~Category();
+        ~Category();
 
 };
 

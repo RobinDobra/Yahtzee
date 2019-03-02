@@ -14,7 +14,7 @@ class Dice {
         bool isOnHold;
 
     public:
-        Dice(const string &name);
+        explicit Dice(const string &name);
 
         const string &getName() const;
 

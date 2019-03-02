@@ -37,7 +37,7 @@ void Dice::setIsOnHold(bool isOnHold) {
 
 Dice::~Dice() {
     cout << "Dice is being deleted" << endl;
-    this->name.clear();
+    this->name="";
     this->value = -1;
     this->isOnHold = false;
 }

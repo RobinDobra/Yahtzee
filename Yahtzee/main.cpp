@@ -9,23 +9,6 @@ using namespace std;
 static const int numberOfCategories = 13;
 static const int numberOfDices = 5;
 
-void printCategory(Category * categories, Score *score, int numberOfCategories) {
-    score->setUpperScore(5);
-    score->setLowerScore(14);
-    score->setUpperScore(7);
-    for (int i = 0; i < numberOfCategories; i++) { //Gesamtanzahl der Bytes in category geteilt durch Größe des Datentyps [Funktioniert möglicheweise nicht bei Pointern]
-        //printf()
-        cout << categories[i].getName() << endl;
-        if (categories[i].getName() == "Sechsen") {
-            cout << "Punktestand des oberen Abschnitts: " << score->getUpperScore() << endl << endl;
-        }
-        else if (categories[i].getName() == "Yahtzee") {
-            cout << "Punktestand des unteren Abschnitts: " << score->getLowerScore() << endl << endl;
-        }
-    }
-    cout << "Gesamtpunktestand: " << score->getTotalScore() << endl << endl;
-}
-
 Category * populateCategories(Category * categories[numberOfCategories]) {
     categories [0] = new Category("Einsen", "Summe aller geworfenen Einsen");
     categories [1] = new Category("Zweien", "Summe aller geworfenen Zweien");
@@ -49,16 +32,6 @@ void startScreen() {
     cout << "2) Programm beenden" << endl;
     cout << endl;
 
-}
-
-void showMenu() {
-    cout << "Sie haben bereits x von 13 mal gewuerfelt" << endl; //ToDo
-    cout << "1) Werfe Wuerfel" << endl;
-    cout << "2) Zeige Kategorien" << endl;
-    cout << "3) Zeige Kategorien mit Beschreibungen" << endl;
-    cout << "4) Partie neustarten" << endl;
-    cout << "5) Programm beenden" << endl;
-    cout << endl;
 }
 
 void populateDices(Dice * dices[numberOfDices]) {
@@ -101,7 +74,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
 
 
         cout << endl;
-        if (anzahlWuerfe < 20) {
+        if (anzahlWuerfe < 3) {
             cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
             cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
         }
@@ -118,7 +91,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
             isInLimits = atoi(userInput.c_str()) > 0 && atoi(userInput.c_str()) < 7;
         }
 
-        if (isInLimits && anzahlWuerfe < 20) {
+        if (isInLimits && anzahlWuerfe < 3) {
             if (dices[atoi(userInput.c_str()) - 1]->getIsOnHold() == false) {
                 dices[atoi(userInput.c_str()) - 1]->setIsOnHold(true);
             } else {
@@ -131,7 +104,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
     return userInput;
 }
 
-int saveToCategory (Category * categories[numberOfCategories], Dice * dices[numberOfDices]) {
+int saveToCategory (Category * categories[numberOfCategories]) {
     string userInput;
     bool isInLimits = false;
 
@@ -231,15 +204,16 @@ void calculatePointsForCategory(Category * categories[numberOfCategories], Dice 
     }
 
     else if (categoryNumber == 9) {  // Full House
-        cout << "a" << endl;
-
         int occurences1 = dices[0]->getValue(); int counter1 = 0;
         int occurences2 = dices[1]->getValue(); int counter2 = 0;
         for (int i = 0; i < numberOfDices; i++) {
             cout << "b" << i << endl;
+            dices[i]->getValue();
             if (occurences1 == dices[i]->getValue()) {
+                cout << "occurences1 is hit: " + occurences1 << endl;
                 counter1++;
             } else if (occurences2 == dices[i]->getValue()) {
+                cout << "occurences2 is hit: " + occurences1 << endl;
                 counter2++;
             }
         }
@@ -389,16 +363,16 @@ int main() {
     // Spiel
     startScreen();
 
-    for (int rundenNummer = 1; rundenNummer <= 1; rundenNummer++) {
+    for (int rundenNummer = 1; rundenNummer <= 13; rundenNummer++) {
         cout << endl << "============================================== Das ist Runde Nummer " << rundenNummer << "! ==============================================" << endl;
-        while (userInput != "s" && anzahlWuerfe < 20) {
+        while (userInput != "s" && anzahlWuerfe < 3) {
 
             anzahlWuerfe++;
             throwDices(dices);
             userInput = chooseDicesToHold(dices, anzahlWuerfe);
         }
 
-        chosenCategory = saveToCategory(categories, dices);
+        chosenCategory = saveToCategory(categories);
         calculatePointsForCategory(categories, dices, chosenCategory);
 
         userInput = "unset";

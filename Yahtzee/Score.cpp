@@ -45,4 +45,4 @@ Score::~Score() {
     this->upperScore = 0;
     this->lowerScore = 0;
     this->totalScore = 0;
-};
+}
