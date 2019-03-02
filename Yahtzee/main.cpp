@@ -9,6 +9,8 @@ using namespace std;
 static const int numberOfCategories = 13;
 static const int numberOfDices = 5;
 
+// Fuegt die Kategorien sowie allgemeine Erklaerungen zu den Kategorien hinzu, um dem Spieler die regeln zu erlaeutern.
+// Fuer jede Category wird ein Objekt angelegt und categories uebergeben
 Category * populateCategories(Category * categories[numberOfCategories]) {
     categories [0] = new Category("Einsen", "Summe aller geworfenen Einsen");
     categories [1] = new Category("Zweien", "Summe aller geworfenen Zweien");
@@ -26,14 +28,7 @@ Category * populateCategories(Category * categories[numberOfCategories]) {
     return categories[numberOfCategories];
 }
 
-void startScreen() {
-    cout << "Willkommen bei Yahtzee/Kniffel!" << endl;
-    cout << "1) Partie beginnen" << endl;
-    cout << "2) Programm beenden" << endl;
-    cout << endl;
-
-}
-
+// Die Wuerfel werden mit Werten befuellt und anhand des Standardkonstrukturs auf ihre Initialwerte gesetzt
 void populateDices(Dice * dices[numberOfDices]) {
     dices[0] = new Dice("Wuerfel 1");
     dices[1] = new Dice("Wuerfel 2");
@@ -42,6 +37,9 @@ void populateDices(Dice * dices[numberOfDices]) {
     dices[4] = new Dice("Wuerfel 5");
 }
 
+
+// um die Wuerfel so zufaellig wie moeglich fallen zu lassen wird ein Mersenne-Twister Generator initiiert
+// der Zufallszahlengenerator wird geseeded und anschliessend (gleichverteilt) auf Zufallszahlen in den Grenzen von 1 bis 6 gesetzt
 void throwDices(Dice * dices[numberOfDices]) {
     mt19937 rng; //Mersenne-Twister Pseudo-Zufallszahlengenerator
     rng.seed(random_device()()); // initialisiere Seed
@@ -55,6 +53,7 @@ void throwDices(Dice * dices[numberOfDices]) {
     }
 }
 
+// Der Benutzer kann auswaehlen, welche Wuerfel er gerne halten wuerde. Bei Falscheingabe kann es der Benutzer erneut versuchen.
 string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
     string userInput;
     // Zurücksetzen nach jedem Wurf
@@ -74,7 +73,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
 
 
         cout << endl;
-        if (anzahlWuerfe < 3) {
+        if (anzahlWuerfe < 20) {
             cout << "Wenn Sie einen Wuerfel halten moechten, geben Sie dessen Nummer ein. " << endl;
             cout << "Geben Sie ein r ein, um erneut zu rollen." << endl;
         }
@@ -91,7 +90,7 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
             isInLimits = atoi(userInput.c_str()) > 0 && atoi(userInput.c_str()) < 7;
         }
 
-        if (isInLimits && anzahlWuerfe < 3) {
+        if (isInLimits && anzahlWuerfe < 20) {
             if (dices[atoi(userInput.c_str()) - 1]->getIsOnHold() == false) {
                 dices[atoi(userInput.c_str()) - 1]->setIsOnHold(true);
             } else {
@@ -104,6 +103,8 @@ string chooseDicesToHold (Dice * dices[numberOfDices], int anzahlWuerfe){
     return userInput;
 }
 
+
+// Der Benutzer gibt an, fuer welche Kategorie sein Wurf gesepeichert werden soll
 int saveToCategory (Category * categories[numberOfCategories]) {
     string userInput;
     bool isInLimits = false;
@@ -132,9 +133,10 @@ int saveToCategory (Category * categories[numberOfCategories]) {
 
 }
 
+// Je nach gewaehlter Kategorie wird durch Validierungslogik geprueft, ob der Wurf gueltig war (z.B. ob es ein FullHouse ist),
+// bzw. wie viele Punkte erzielt wurde (z.B. bei der Summe aller Wuerfel bei drei Gleichen einer Sorte
 void calculatePointsForCategory(Category * categories[numberOfCategories], Dice * dices[numberOfDices], int categoryNumber) {
     int countPoints = 0;
-    // ### calculateRound
     if (categoryNumber >= 1 && categoryNumber <=6 ) {   // Einses, Zweien ... Sechsen
         for (int i = 0; i < numberOfDices; i++) {
             if (categoryNumber == dices[i]->getValue()) {
@@ -204,8 +206,15 @@ void calculatePointsForCategory(Category * categories[numberOfCategories], Dice 
     }
 
     else if (categoryNumber == 9) {  // Full House
-        int occurences1 = dices[0]->getValue(); int counter1 = 0;
-        int occurences2 = dices[1]->getValue(); int counter2 = 0;
+        int occurences1 = dices[0]->getValue();
+        int occurences2 = dices[1]->getValue();;
+        int counter1 = 0; int counter2 = 0;
+        for (int i = 0; i < numberOfDices; i++) {
+            occurences2 = dices[1]->getValue();
+            if (occurences2 != occurences1) {
+                break;
+            }
+        }
         for (int i = 0; i < numberOfDices; i++) {
             cout << "b" << i << endl;
             dices[i]->getValue();
@@ -213,7 +222,7 @@ void calculatePointsForCategory(Category * categories[numberOfCategories], Dice 
                 cout << "occurences1 is hit: " + occurences1 << endl;
                 counter1++;
             } else if (occurences2 == dices[i]->getValue()) {
-                cout << "occurences2 is hit: " + occurences1 << endl;
+                cout << "occurences2 is hit: " + occurences2 << endl;
                 counter2++;
             }
         }
@@ -224,6 +233,11 @@ void calculatePointsForCategory(Category * categories[numberOfCategories], Dice 
         }
         else {
             cout << "### Leider kein Full House. ###" << endl;
+        }
+        if (occurences1 == occurences2) {
+            "Leider kein FULL HOUSE, da alle Zahlen gleich.";
+            categories[categoryNumber - 1]->setPoints(0);
+
         }
 
         cout << "###############################################" << endl;
@@ -360,12 +374,9 @@ int main() {
     Dice * dices[numberOfDices];
     populateDices(dices);
 
-    // Spiel
-    startScreen();
-
     for (int rundenNummer = 1; rundenNummer <= 13; rundenNummer++) {
         cout << endl << "============================================== Das ist Runde Nummer " << rundenNummer << "! ==============================================" << endl;
-        while (userInput != "s" && anzahlWuerfe < 3) {
+        while (userInput != "s" && anzahlWuerfe < 20) {
 
             anzahlWuerfe++;
             throwDices(dices);
