@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(untitled main.cpp Score.cpp Score.h Category.cpp Category.h Dice.cpp Dice.h)
+add_executable(untitled Main.cpp Score.cpp Score.h Category.cpp Category.h Dice.cpp Dice.h)

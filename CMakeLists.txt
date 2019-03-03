@@ -10,6 +10,6 @@ add_executable(Yahtzee
         Yahtzee/Category.h
         Yahtzee/Dice.cpp
         Yahtzee/Dice.h
-        Yahtzee/main.cpp
+        Yahtzee/Main.cpp
         Yahtzee/Score.cpp
         Yahtzee/Score.h)
